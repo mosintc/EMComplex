@@ -1,0 +1,66 @@
+ 0.6166180E+04
+ 0.6725203E+03
+ 0.1254237E+03
+ 0.1223619E+03
+ 0.1100866E+03
+ 0.8068573E+02
+ 0.3121636E+03
+ 0.6440566E+01
+ 0.4624970E+03
+ 0.9570033E+02
+ 0.3626713E+02
+ 0.5061719E+03
+ 0.1619171E+03
+ 0.1551593E+03
+ 0.9592327E+03
+ 0.9941781E+02
+ 0.3637886E+03
+ 0.4128604E+03
+ 0.2908377E+03
+ 0.2592593E+03
+ 0.3292067E+03
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+ 0.0000000E+00
+TOTAL TIME
+MainSource
+Main E int
+Main H int
+Main E bnd
+Main H bnd
+Poisson   
+Manage Aux
+Output    
+Analytical
+GetError  
+AuxSources
+Aux E int 
+Aux H int 
+Aux E bnd 
+Aux H bnd 
+PML E int 
+PML H int 
+BufClear  
+SaveFields
+AuxSaveFie
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        
+NA        

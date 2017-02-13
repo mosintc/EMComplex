@@ -1,0 +1,26 @@
+  echo "---Compilation Started---"
+  echo "commonvars.f90"
+  ifort -c -openmp commonvars.f90
+  echo "dipole.f90"
+  ifort -c -openmp dipole.f90
+  echo "sdipole.f90"
+  ifort -c -openmp sdipole.f90
+  echo "timersclass.f90"
+  ifort -c -openmp timersclass.f90
+  echo "meshclass.f90"
+  ifort -c -openmp meshclass.f90
+  echo "sourceclass.f90"
+  ifort -c -openmp sourceclass.f90
+  echo "bufferclass.f90"
+  ifort -c -openmp bufferclass.f90
+  echo "parallel.f90"
+  ifort -c -openmp parallel.f90
+  echo "poissonclass.f90"
+  ifort -c -openmp poissonclass.f90
+  echo "pmlclass.f90"
+  ifort -c -openmp pmlclass.f90
+  echo "problemclass.f90"
+  ifort -c -openmp problemclass.f90
+  echo "solutionclass.f90"
+ifort -c -openmp solutionclass.f90
+echo "---Compilation Finished---"
