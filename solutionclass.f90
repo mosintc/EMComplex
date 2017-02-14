@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains part of implementation of tSolution class
+
 module solutionclass
 ! Source class that describes analytical solution and sources  
   use commonvars
@@ -26,20 +32,7 @@ module solutionclass
      ! Main problem boundaries
      integer :: mainEboundarytype;
      integer :: mainHboundarytype;
-     ! Mesh description
-     integer :: Nx, Ny, Nz, Nt;      ! discretization values
-     real*8  :: hhx, hhy, hhz, ht;   ! differentials
-     ! Problems
-     type(TProblem) :: mainproblem;
-     ! Poisson parameters
-     integer :: npx, npy, npz;     
-     ! Aux Problems
-       integer :: auxnum;
-       class(TProblem), allocatable :: auxproblems(:);
-       type(TTimers) :: timers;
-       integer :: dNxaux, dNyaux, dNzaux;      ! discretization values
-       integer :: auxEboundarytype;
-       integer :: auxHboundarytype;
+         ! You can choose one of following ABC for E field and (-1, 0, 1, 2) for H field!
          ! -1 - no boundaries
          ! 0 - zeros
          ! 1 - analytical solution 
@@ -57,6 +50,20 @@ module solutionclass
          ! 14 - hagstrow-warburton abc Ey_x=0, Unsplit PML elsewhere
          ! 15 - HWeva abc Ey_x=0, Exact elsewhere
          ! 16 - HWEva ABC Ey_x=Nx, Unpslit PML elsewhere     
+     ! Mesh description
+     integer :: Nx, Ny, Nz, Nt;      ! discretization values
+     real*8  :: hhx, hhy, hhz, ht;   ! differentials
+     ! Problems
+     type(TProblem) :: mainproblem;
+     ! Poisson parameters
+     integer :: npx, npy, npz;     
+     ! Aux Problems
+       integer :: auxnum;
+       class(TProblem), allocatable :: auxproblems(:);
+       type(TTimers) :: timers;
+       integer :: dNxaux, dNyaux, dNzaux;      ! discretization values
+       integer :: auxEboundarytype;
+       integer :: auxHboundarytype;
      ! Effective currents params
        real*8 :: auxmaxtime;
        real*8 :: sgm_s;
@@ -164,7 +171,6 @@ contains
       
       this%auxlifetime = nint((1.0*sqrt(xsize**2+ysize**2+zsize**2)/cc+2*this%auxmaxtime)/this%ht)+this%auxgaptime;
 
-      
       this%hig1 = starter%hig1;
       this%hig2 = starter%hig2;
       this%gnNum = starter%gnNum;
@@ -1037,7 +1043,7 @@ contains
          call this%mainproblem%problem_init(pst, this%buffer)
          call this%mainproblem%UploadMainMuToBuffer;            
          ! Aux problems
-         this%auxEboundarytype = 3;   ! E - PML
+         this%auxEboundarytype = 0;   ! E - No Boundary
          this%auxHboundarytype = 2;   ! H - Scheme
          this%aux_currentstype = 1;   ! Original source cutted by Theta
          this%aux_effcurrentstype = 0 ! Common effective currents
@@ -1340,55 +1346,6 @@ contains
          allocate(this%auxproblems(0:auxmaxcount-1));
          call this%timers%timers_init(auxmaxcount);
          call this%AddAuxProblem;
-      case (24) ! HWeva ABC on Ey_X=Nx, Unsplit PML elsewhere, lacunaes, Poisson, DoubleProblem
-         !Buffer
-         this%buffer => pbuffer;
-         call this%buffer%buffer_init(this%Nx + 2*this%dNxaux,this%Ny + 2*this%dNyaux,this%Nz + 2*this%dNzaux);
-         !Main problem
-         this%main_currentstype = 0; ! Currents from Source
-         pst%ptype = 0;
-         pst%new_id = 0;
-         pst%Nx = this%Nx;       
-         pst%Ny = this%Ny;       
-         pst%Nz = this%Nz;       
-         pst%Nt = this%Nt;       
-         pst%hhx = this%hhx;
-         pst%hhy = this%hhy;
-         pst%hhz = this%hhz;
-         pst%npx = this%npx;        
-         pst%npy = this%npy;       
-         pst%npz = this%npz; 
-         pst%ht = this%ht;
-         pst%schemetype = this%main_schemetype;
-         pst%sourcetype = this%main_sourcetype;
-         pst%currentstype = this%main_currentstype;         
-         pst%Eboundarytype = 4;    ! E - From aux problems
-         pst%effcurrentstype = 1;  ! Effective currents with Poisson
-         pst%Hboundarytype = 2;    ! H - Scheme
-         pst%PML_thickness = this%main_PML_thickness;
-         pst%PML_param = this%main_PML_param;
-         pst%Namu = starter%Namu;
-         pst%Ndmu = starter%Ndmu;
-         pst%auxmaxtime = this%auxmaxtime;
-         pst%sgm_s = this%sgm_s;   
-         pst%bufoffsetx=this%dNxaux;
-         pst%bufoffsety=this%dNyaux;
-         pst%bufoffsetz=this%dNzaux;
-         pst%maindx=0;
-         pst%maindy=0;
-         pst%maindz=0;
-         call this%mainproblem%problem_init(pst, this%buffer)
-         call this%mainproblem%UploadMainMuToBuffer;            
-         ! Aux problems
-         this%auxEboundarytype = 16;   ! E - HWEva + PML
-         this%auxHboundarytype = 2;    ! H - Scheme
-         this%aux_currentstype = 4;    ! Effective currents cutted by Theta with Poisson correction
-         this%aux_effcurrentstype = 0 ! Common effective currents
-         this%aux_pmlcurrentstype = 4; ! Effective currents cutted by Theta with Poisson correction
-         this%auxnum = 0;
-         allocate(this%auxproblems(0:auxmaxcount-1));
-         call this%timers%timers_init(auxmaxcount);
-         call this%AddAuxProblem;
       case (25) ! Sommerfeld ABCe, lacunaes, Poisson    
          !Buffer
          this%buffer => pbuffer;
@@ -1508,8 +1465,6 @@ contains
          write(*,*) 'HWEva Ey_X=0 ABC and PML elsewhere, Lacunaes, the main source is cut, NO Poisson';
       case(23)
          write(*,*) 'HWeva ABC on Ey_X=Nx, Unsplit PML elsewhere, lacunaes, Poisson';
-      case(24)
-         write(*,*) 'HWeva ABC on Ey_X=Nx, Unsplit PML elsewhere, lacunaes, Poisson, DoubleProblem';
       case(25)
          write(*,*) 'Sommerfeld ABCe, lacunaes, Poisson';    
       case default
@@ -1540,7 +1495,6 @@ contains
       case default
          write(*,*) 'Source: UNKNOWN source type';   
       end select
-
       if (this%soltype==5.OR.this%soltype==6.OR.this%soltype==14.OR.this%soltype==15.OR.this%soltype==16.OR.this%soltype==19.OR.this%soltype==22.OR.this%soltype==23.OR.this%soltype==101.OR.this%soltype==100.OR.this%soltype==25) then
          write(*,*) 'Domain diameter:', sqrt(xsize**2+ysize**2+zsize**2)/cc
          write(*,*) 'Aux problems standrad life time:', this%auxlifetime;
@@ -1856,6 +1810,8 @@ contains
             call this%auxproblems(k)%problem_DoIndependentStep(t);
             call this%auxproblems(k)%addEtobuffer;
          endif
+         !  The following steps allow to accumulate E static field, but it doesn't work
+         
          !   if (this%timers%timer(k)>0.AND.k<this%auxnum) then
          !      write(*,*) 'Problem doing step:', k;
          !      call this%auxproblems(k)%problem_DoIndependentStep(t);

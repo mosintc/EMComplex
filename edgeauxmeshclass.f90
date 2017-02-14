@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of tEdgeMesh class
+
 module EdgeAuxMeshclass
 ! Class that contains arrays for auxiliary variables on the edges
   use commonvars

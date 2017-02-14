@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of tMesh class
+
 module meshclass
 ! Class that contains arrays with field components  
   use commonvars
@@ -80,7 +86,7 @@ contains
       call this%mesh_clearChA;
     end subroutine mesh_init;
 
-    !MESH_DESTROY------------------------------------------------------------------   
+!MESH_DESTROY------------------------------------------------------------------   
     subroutine mesh_destroy(this) 
       !Destroy Mesh structure and deallocate the memor
       class(tMesh) :: this

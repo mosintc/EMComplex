@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains part of implementation of tProblem class
+
 module problemclass
   use commonvars
   use meshclass
@@ -47,6 +53,7 @@ module problemclass
       ! 15 - HWEva ABC Ey_x=Nx, exact elsewhere
       ! 16 - HWEva ABC Ey_x=Nx, Unpslit PML elsewhere
     integer :: Hboundarytype;
+      ! Here you can choose -1, 0, 1, 2 boundary type only!
     integer :: Nx, Ny, Nz, Nt;      ! discretization values
     real*8  :: hhx, hhy, hhz, ht;   ! differentials
     type(tMesh) Ef, Hf;             ! actual fields of the interior problem
@@ -100,7 +107,7 @@ module problemclass
     real*8 :: sgm_s;
     ! Effective currents params
     integer :: Namu;
-ц    integer :: Ndmu;
+    integer :: Ndmu;
     integer :: Nlc;
     real*8 :: Dlc;
     contains
@@ -723,6 +730,7 @@ contains
       write(*,*) 'Ti(0)', this%ti(0);
       write(*,*) 'Ti(Nt)', this%ti(this%Nt);
 
+      ! You can uncomment the following strings to see these arrays on the screen
       !write(*,*) '====Xi===='
       !do k=0,this%Nx
       !   write(*,*) this%Xi(k);   
@@ -807,6 +815,7 @@ contains
          write(*,*) '  PMLZi(0)', this%PML%zi(0);
          write(*,*) '  PMLZi(Nz)', this%PML%zi(this%PML%Nz);
 
+         ! You can uncomment the following strings to see these arrays on the screen
          !write(*,*) '====PML Xi===='
          !do k=0,this%PML%Nx
          !  write(*,*) this%PML%Xi(k);   
@@ -823,6 +832,7 @@ contains
          write(*,*) '  PMLsgmzi(0)', this%PML%sgmzi(0);
          write(*,*) '  PMLsgmzi(Nz)', this%PML%sgmzi(this%PML%Nz);
 
+         ! You can uncomment the following strings to see these arrays on the screen
          !write(*,*) '====PML Sigma Xi===='
          !do k=0,this%PML%Nx
          !  write(*,*) this%PML%sgmXi(k);   
@@ -886,7 +896,7 @@ contains
             write(*,504) k, this%hwSigmas(k);
          enddo
 
-
+         ! You can uncomment the following strings to output these parameters
          !write(*,*) 'HWEva Aux Aux Angles: ', this%hwEvaPa;
          !write(*,*) 'HWEva Aux Aux Sigmas: ', this%hwEvaEa;
          !do k=0,this%hwEvaPa
@@ -1249,59 +1259,11 @@ contains
       inc = 0;
       select case(component)
       case(1) ! EX update
-     !    if (checkbounds==1) then
-     !       ! Check all the necessary points are correct
-     !       inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, component);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py+1, Pz, 3);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 3);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz+1, 2);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 2);
-     !    endif
-     !    if (inc==0) then
-            this%Ef%X(Px,Py,Pz)=this%Ef%X(Px,Py,Pz) + cc*this%ht*( (this%Hf%Z(Px,Py+1,Pz)-this%Hf%Z(Px,Py,Pz))/this%hhy - (this%Hf%Y(Px,Py,Pz+1)-this%Hf%Y(Px,Py,Pz))/this%hhz )-this%ht*this%Je%X(Px,Py,Pz)*4.0d0*Pi/cc;
-     !       if (checkupdated==1) then
-     !          this%Ef%chX(Px,Py,Pz) = this%Ef%chX(Px,Py,Pz)+1;   ! this string is important for update checking
-     !       endif     
-     !    else
-     !       fatalerr = 201;
-     !       write(*,*) 'Alert! Ex point update bounds error.'
-     !    endif 
+         this%Ef%X(Px,Py,Pz)=this%Ef%X(Px,Py,Pz) + cc*this%ht*( (this%Hf%Z(Px,Py+1,Pz)-this%Hf%Z(Px,Py,Pz))/this%hhy - (this%Hf%Y(Px,Py,Pz+1)-this%Hf%Y(Px,Py,Pz))/this%hhz )-this%ht*this%Je%X(Px,Py,Pz)*4.0d0*Pi/cc;
       case(2) ! EY update
-     !    if (checkbounds==1) then
-     !      ! Check all the necessary points are correct
-     !       inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, component);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz+1, 1);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 1);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px+1, Py, Pz, 3);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 3);
-     !    endif     
-     !    if (inc==0) then
-            this%Ef%Y(Px,Py,Pz)=this%Ef%Y(Px,Py,Pz) + cc*this%ht*( (this%Hf%X(Px,Py,Pz+1)-this%Hf%X(Px,Py,Pz))/this%hhz - (this%Hf%Z(Px+1,Py,Pz)-this%Hf%Z(Px,Py,Pz))/this%hhx )-this%ht*this%Je%Y(Px,Py,Pz)*4.0d0*Pi/cc;
-     !       if (checkupdated==1) then
-     !          this%Ef%chY(Px,Py,Pz) = this%Ef%chY(Px,Py,Pz)+1;   ! this string is important for update checking
-     !       endif
-     !    else
-     !       fatalerr = 201;
-     !       write(*,*) 'Alert! Ey point update bounds error.'
-     !    endif 
+         this%Ef%Y(Px,Py,Pz)=this%Ef%Y(Px,Py,Pz) + cc*this%ht*( (this%Hf%X(Px,Py,Pz+1)-this%Hf%X(Px,Py,Pz))/this%hhz - (this%Hf%Z(Px+1,Py,Pz)-this%Hf%Z(Px,Py,Pz))/this%hhx )-this%ht*this%Je%Y(Px,Py,Pz)*4.0d0*Pi/cc;
       case(3) ! EZ update
-     !    if (checkbounds==1) then
-            ! Check all the necessary points are correct
-     !       inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, component);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px+1, Py, Pz, 2);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 2);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py+1, Pz, 1);
-     !       inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 1);
-     !    endif
-     !    if (inc==0) then
-            this%Ef%Z(Px,Py,Pz)=this%Ef%Z(Px,Py,Pz) + cc*this%ht*( (this%Hf%Y(Px+1,Py,Pz)-this%Hf%Y(Px,Py,Pz))/this%hhx - (this%Hf%X(Px,Py+1,Pz)-this%Hf%X(Px,Py,Pz))/this%hhy )-this%ht*this%Je%Z(Px,Py,Pz)*4.0d0*Pi/cc;
-     !       if (checkupdated==1) then
-     !          this%Ef%chZ(Px,Py,Pz) = this%Ef%chZ(Px,Py,Pz)+1;   ! this string is important for update checking
-     !       endif   
-     !    else
-     !       fatalerr = 201;
-     !       write(*,*) 'Alert! Ez point update bounds error.'
-     !    endif
+         this%Ef%Z(Px,Py,Pz)=this%Ef%Z(Px,Py,Pz) + cc*this%ht*( (this%Hf%Y(Px+1,Py,Pz)-this%Hf%Y(Px,Py,Pz))/this%hhx - (this%Hf%X(Px,Py+1,Pz)-this%Hf%X(Px,Py,Pz))/this%hhy )-this%ht*this%Je%Z(Px,Py,Pz)*4.0d0*Pi/cc;
       case default ! Incorrect
          fatalerr = 203;
          write(*,*) 'Alert! Incorrect use of Component in updateEpoint function!', component
@@ -1342,59 +1304,11 @@ contains
       inc = 0;
       select case(component)
       case(1) ! Hx update
-        ! if (checkbounds==1) then
-        !    ! Check all the necessary points are correct
-        !    inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, component);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 3);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py-1, Pz, 3);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 2);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz-1, 2);
-        ! endif 
-        ! if (inc==0) then
-            this%Hf%X(Px,Py,Pz)=this%Hf%X(Px,Py,Pz) - cc*this%ht*( (this%Ef%Z(Px,Py,Pz)-this%Ef%Z(Px,Py-1,Pz))/this%hhy - (this%Ef%Y(Px,Py,Pz)-this%Ef%Y(Px,Py,Pz-1))/this%hhz ) -this%ht*this%Jh%X(Px,Py,Pz)*4.0d0*Pi/cc;
-        !    if (checkupdated==1) then
-        !       this%Hf%chX(Px,Py,Pz) = this%Hf%chX(Px,Py,Pz)+1; ! this string is important for update checking
-        !    endif   
-        ! else
-        !    fatalerr = 202;
-        !    write(*,*) 'Alert! Hx point update bounds error.'
-        ! endif   
+         this%Hf%X(Px,Py,Pz)=this%Hf%X(Px,Py,Pz) - cc*this%ht*( (this%Ef%Z(Px,Py,Pz)-this%Ef%Z(Px,Py-1,Pz))/this%hhy - (this%Ef%Y(Px,Py,Pz)-this%Ef%Y(Px,Py,Pz-1))/this%hhz ) -this%ht*this%Jh%X(Px,Py,Pz)*4.0d0*Pi/cc;
       case(2) ! Hy update
-        ! if (checkbounds==1) then
-        !    ! Check all the necessary points are correct
-        !    inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, component);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 1);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz-1, 1);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 3);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px-1, Py, Pz, 3);
-        ! endif 
-        ! if (inc==0) then
-            this%Hf%Y(Px,Py,Pz)=this%Hf%Y(Px,Py,Pz) - cc*this%ht*( (this%Ef%X(Px,Py,Pz)-this%Ef%X(Px,Py,Pz-1))/this%hhz - (this%Ef%Z(Px,Py,Pz)-this%Ef%Z(Px-1,Py,Pz))/this%hhx ) - this%ht*this%Jh%Y(Px,Py,Pz)*4.0d0*Pi/cc;
-        !    if (checkupdated==1) then
-        !       this%Hf%chY(Px,Py,Pz) = this%Hf%chY(Px,Py,Pz)+1; ! this string is important for update checking
-        !    endif   
-        ! else
-        !    fatalerr = 202;
-        !    write(*,*) 'Alert! Hy point update bounds error.'
-        ! endif   
+         this%Hf%Y(Px,Py,Pz)=this%Hf%Y(Px,Py,Pz) - cc*this%ht*( (this%Ef%X(Px,Py,Pz)-this%Ef%X(Px,Py,Pz-1))/this%hhz - (this%Ef%Z(Px,Py,Pz)-this%Ef%Z(Px-1,Py,Pz))/this%hhx ) - this%ht*this%Jh%Y(Px,Py,Pz)*4.0d0*Pi/cc;
       case(3) ! Hz update
-        ! if (checkbounds==1) then
-        !    ! Check all the necessary points are correct
-        !    inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, component);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 2);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px-1, Py, Pz, 2);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 1);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py-1, Pz, 1);
-        ! endif 
-        ! if (inc==0) then
-            this%Hf%Z(Px,Py,Pz)=this%Hf%Z(Px,Py,Pz) - cc*this%ht*( (this%Ef%Y(Px,Py,Pz)-this%Ef%Y(Px-1,Py,Pz))/this%hhx - (this%Ef%X(Px,Py,Pz)-this%Ef%X(Px,Py-1,Pz))/this%hhy ) - this%ht*this%Jh%Z(Px,Py,Pz)*4.0d0*Pi/cc;
-        !    if (checkupdated==1) then
-        !       this%Hf%chZ(Px,Py,Pz) = this%Hf%chZ(Px,Py,Pz)+1; ! this string is important for update checking
-        !    endif  
-        ! else
-        !    fatalerr = 202;
-        !    write(*,*) 'Alert! Hz point update bounds error.'
-        ! endif
+         this%Hf%Z(Px,Py,Pz)=this%Hf%Z(Px,Py,Pz) - cc*this%ht*( (this%Ef%Y(Px,Py,Pz)-this%Ef%Y(Px-1,Py,Pz))/this%hhx - (this%Ef%X(Px,Py,Pz)-this%Ef%X(Px,Py-1,Pz))/this%hhy ) - this%ht*this%Jh%Z(Px,Py,Pz)*4.0d0*Pi/cc;
       case default ! Incorrect
          fatalerr = 204;
          write(*,*) 'Alert! Incorrect use of Component in updateHpoint function!', component   
@@ -2263,18 +2177,6 @@ contains
        fatalerr = 205;
        write(*,*) 'Alert! Illegal boundary condition for E in fillEboundaryPoint function!', this%Eboundarytype   
     end select
-    !if (checkupdated==1) then
-    !   if (this%Eboundarytype /= 2) then
-    !      select case (component)
-    !      case(1)
-    !         this%Ef%chX(Px, Py, Pz) = this%Ef%chX(Px, Py, Pz)+1;
-    !      case(2)
-    !         this%Ef%chY(Px, Py, Pz) = this%Ef%chY(Px, Py, Pz)+1;
-    !      case(3)
-    !         this%Ef%chZ(Px, Py, Pz) = this%Ef%chZ(Px, Py, Pz)+1;
-    !      end select
-    !   endif
-    !endif  
   end subroutine fillEBoundaryPoint
 
 
@@ -2349,18 +2251,6 @@ contains
        fatalerr = 206;
        write(*,*) 'Alert! Illegal boundary condition for H in fillEboundaryPoint function!', this%Hboundarytype
     end select
-    !if (checkupdated==1) then
-    !   if (this%Hboundarytype /= 2) then  
-    !      select case (component)
-    !      case(1)
-    !         this%Hf%chX(Px, Py, Pz) = this%Hf%chX(Px, Py, Pz)+1;
-    !      case(2)
-    !         this%Hf%chY(Px, Py, Pz) = this%Hf%chY(Px, Py, Pz)+1;
-    !      case(3)
-    !         this%Hf%chZ(Px, Py, Pz) = this%Hf%chZ(Px, Py, Pz)+1;
-    !      end select
-    !   endif
-    !endif
   end subroutine fillHBoundaryPoint
 
   
@@ -2523,9 +2413,6 @@ contains
          do j=1,this%Ny-1
             do i=1,this%Nx
                this%PML%Ef%X(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%Ef%X(i,j,k); ! Ex
-               !if (checkupdated==1) then
-               !   this%PML%Ef%chX(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%PML%Ef%chX(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml)+1;   ! this string is important for update checking
-               !endif
             enddo
          enddo
       enddo
@@ -2535,9 +2422,6 @@ contains
          do j=1,this%Ny
             do i=1,this%Nx-1
                this%PML%Ef%Y(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%Ef%Y(i,j,k); ! Ey
-               !if (checkupdated==1) then
-               !   this%PML%Ef%chY(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%PML%Ef%chY(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml)+1;   ! this string is important for update checking
-               !endif
             enddo
          enddo
       enddo
@@ -2547,9 +2431,6 @@ contains
          do j=1,this%Ny-1
             do i=1,this%Nx-1
                this%PML%Ef%Z(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%Ef%Z(i,j,k); ! Ez
-               !if (checkupdated==1) then
-               !   this%PML%Ef%chZ(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%PML%Ef%chZ(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml)+1;   ! this string is important for update checking
-               !endif
             enddo
          enddo
       enddo
@@ -2561,9 +2442,6 @@ contains
          do j=2,this%Ny-1
             do i=1,this%Nx-1
                this%PML%Hf%X(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%Hf%X(i,j,k); ! Hx
-               !if (checkupdated==1) then
-               !   this%PML%Hf%chX(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%PML%Hf%chX(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml)+1;   ! this string is important for update checking
-               !endif
             enddo
          enddo
       enddo
@@ -2573,9 +2451,6 @@ contains
          do j=1,this%Ny-1
             do i=2,this%Nx-1
                this%PML%Hf%Y(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%Hf%Y(i,j,k); ! Hy
-               !if (checkupdated==1) then
-               !   this%PML%Hf%chY(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%PML%Hf%chY(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml)+1;   ! this string is important for update checking
-               !endif
             enddo
          enddo
       enddo
@@ -2585,9 +2460,6 @@ contains
          do j=2,this%Ny-1
             do i=2,this%Nx-1
                this%PML%Hf%Z(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%Hf%Z(i,j,k); ! Hz
-               !if (checkupdated==1) then
-               !   this%PML%Hf%chZ(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml) = this%PML%Hf%chZ(i+this%PML%NumPml,j+this%PML%NumPml,k+this%PML%NumPml)+1;   ! this string is important for update checking
-               !endif
             enddo
          enddo
       enddo
@@ -3228,14 +3100,7 @@ contains
              endif
           enddo
        enddo
-    enddo
-
-    !write (*,*) 'x: ', this%xi(14);
-    !write (*,*) 'y: ', this%yi(13);
-    !write (*,*) 'z: ', this%zi05(12);
-    !write (*,*) 't: ', this%ti(120);
-    !write (*,*) 'Ez(14,13,12,120)=', this%Source%getEpoint(this%xi(14),this%yi(13),this%zi05(12), this%Ti(120), 3) ! Ey
-    
+    enddo    
     write (*,*) 'maxEx: ', maxEx;
     write (*,*) 'maxEy: ', maxEy;
     write (*,*) 'maxEz: ', maxEz;
@@ -3284,13 +3149,6 @@ contains
           enddo
        enddo
     enddo
-
-    !write (*,*) 'x: ', this%xi(14);
-    !write (*,*) 'y: ', this%yi(13);
-    !write (*,*) 'z: ', this%zi05(12);
-    !write (*,*) 't: ', this%ti(120);
-    !write (*,*) 'Ez(14,13,12,120)=', this%Source%getEpoint(this%xi(14),this%yi(13),this%zi05(12), this%Ti(120), 3) ! Ey
-    
     write (*,*) 'maxJx: ', maxJx;
     write (*,*) 'maxJy: ', maxJy;
     write (*,*) 'maxJz: ', maxJz;
@@ -3367,14 +3225,7 @@ contains
              endif
           enddo
        enddo
-    enddo
-
-    !write (*,*) 'x: ', this%xi(14);
-    !write (*,*) 'y: ', this%yi(13);
-    !write (*,*) 'z: ', this%zi05(12);
-    !write (*,*) 't: ', this%ti(120);
-    !write (*,*) 'Ez(14,13,12,120)=', this%Source%getEpoint(this%xi(14),this%yi(13),this%zi05(12), this%Ti(120), 3) ! Ey
-    
+    enddo   
     write (*,*) 'maxEx: ', maxEx;
     write (*,*) 'maxEy: ', maxEy;
     write (*,*) 'maxEz: ', maxEz;
@@ -4302,7 +4153,7 @@ contains
          enddo   
       endif
 
-      ! More koefficients for sean variable
+      ! More coefficients for sean variable
 !      this%hwA(0, 0) = 3.0d0*this%hwAC(0);
 !      this%hwA(0, 1) = -3.0d0*this%hwAC(0);
 !      this%hwB(0, 0) = -4.0d0*this%hwAC(0);
@@ -4718,7 +4569,7 @@ contains
          enddo   
       endif
 
-      ! More koefficients for sean variable
+      ! More coefficients for sean variable
 !      this%hwA(0, 0) = 3.0d0*this%hwAC(0);
 !      this%hwA(0, 1) = -3.0d0*this%hwAC(0);
 !      this%hwB(0, 0) = -4.0d0*this%hwAC(0);

@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains part of implementation of tProblem class
+
 ! ==== PROBLEM CLASS ====
 ! Hagstrom-Warburton Basic ABC methods
 

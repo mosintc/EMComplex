@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains part of implementation of tPML class
+
 module pmlclass
 ! PML class that holds all the preferences of the PML 
   use commonvars
@@ -238,15 +244,6 @@ contains
       inc = 0;
       select case(component)
       case(1) ! EX update
-      !  if (checkbounds==1) then
-      !     ! Check all the necessary points are correct
-      !     inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, component);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py+1, Pz, 3);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 3);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz+1, 2);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 2);
-      !  endif
-      !  if (inc==0) then
            sg_x =  this%sgmXi05(Px);! this%sgmpml_x(this%xi05(Px));
            sg_y =  this%sgmYi(Py);! this%sgmpml_y(this%yi(Py));
            sg_z =  this%sgmZi(Pz);! this%sgmpml_z(this%zi(Pz));
@@ -260,23 +257,7 @@ contains
            this%Epml%X(Px,Py,Pz)=(DH-this%ht*this%JfE%X(Px,Py,Pz)*4.0d0*Pi/cc+this%Epml%X(Px,Py,Pz)*(1.0d0-0.5d0*sg_z*this%ht*cc))/(1.0d0+0.5d0*sg_z*this%ht*cc);
            ! real EX field
            this%Ef%X(Px,Py,Pz)=this%Ef%X(Px,Py,Pz)*a1+this%Epml%X(Px,Py,Pz)*a2+fldpml0*a3;
-      !     if (checkupdated==1) then
-      !        this%Ef%chX(Px,Py,Pz) = this%Ef%chX(Px,Py,Pz)+1;   ! this string is important for update checking
-      !     endif   
-      !  else
-      !      fatalerr = 301;
-      !      write(*,*) 'Alert! EX PML point update bounds error.'
-      !  endif 
      case(2) ! EY update
-      !  if (checkbounds==1) then
-      !      ! Check all the necessary points are correct
-      !      inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, component);
-      !      inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz+1, 1);
-      !      inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 1);
-      !      inc = inc + this%Hf%mesh_checkpoint(Px+1, Py, Pz, 3);
-      !      inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 3);
-      !  endif
-      !  if (inc==0) then
            sg_x = this%sgmXi(Px);  !this%sgmpml_x(this%xi(Px));
            sg_y = this%sgmYi05(Py);!this%sgmpml_y(this%yi05(Py));
            sg_z = this%sgmZi(Pz);  !this%sgmpml_z(this%zi(Pz));
@@ -290,23 +271,7 @@ contains
            this%Epml%Y(Px,Py,Pz)=(DH-this%ht*this%JfE%Y(Px,Py,Pz)*4.0d0*Pi/cc+this%Epml%Y(Px,Py,Pz)*(1.0d0-0.5d0*sg_x*this%ht*cc))/(1.0d0+0.5d0*sg_x*this%ht*cc);
            ! real EY field
            this%Ef%Y(Px,Py,Pz)=this%Ef%Y(Px,Py,Pz)*a1+this%Epml%Y(Px,Py,Pz)*a2+fldpml0*a3;
-      !     if (checkupdated==1) then
-      !        this%Ef%chY(Px,Py,Pz) = this%Ef%chY(Px,Py,Pz)+1;   ! this string is important for update checking
-      !     endif   
-      !  else
-      !    fatalerr = 301;
-      !    write(*,*) 'Alert! EY PML point update bounds error.'
-      !  endif 
       case(3) ! EZ update
-      !  if (checkbounds==1) then
-      !   ! Check all the necessary points are correct
-      !     inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, component);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px+1, Py, Pz, 2);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 2);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py+1, Pz, 1);
-      !     inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, 1);
-      !  endif  
-      !  if (inc==0) then
            sg_x = this%sgmXi(Px); !this%sgmpml_x(this%xi(Px));
            sg_y = this%sgmYi(Py); !this%sgmpml_y(this%yi(Py));
            sg_z = this%sgmZi05(Pz); !this%sgmpml_z(this%zi05(Pz));
@@ -320,13 +285,6 @@ contains
            this%Epml%Z(Px,Py,Pz)=(DH-this%ht*this%JfE%Z(Px,Py,Pz)*4.0d0*Pi/cc+this%Epml%Z(Px,Py,Pz)*(1.0d0-0.5d0*sg_y*this%ht*cc))/(1.0d0+0.5d0*sg_y*this%ht*cc);
            ! real EZ field
            this%Ef%Z(Px,Py,Pz)=this%Ef%Z(Px,Py,Pz)*a1+this%Epml%Z(Px,Py,Pz)*a2+fldpml0*a3;
-      !     if (checkupdated==1) then
-      !        this%Ef%chZ(Px,Py,Pz) = this%Ef%chZ(Px,Py,Pz)+1;   ! this string is important for update checking
-      !     endif   
-      !  else
-      !     fatalerr = 301;
-      !     write(*,*) 'Alert! EZ PML point update bounds error.'
-      !  endif
       case default ! Incorrect
          fatalerr = 303;
          write(*,*) 'Alert! Incorrect use of Component in updateEpoint function!', component  
@@ -345,15 +303,6 @@ contains
       inc = 0;
       select case(component)
       case(1) ! HX update
-        ! if (checkbounds==1) then
-        !    ! Check all the necessary points are correct
-        !    inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, component);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 3);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py-1, Pz, 3);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 2);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz-1, 2);
-        ! endif
-        ! if (inc==0) then
             sg_x = this%sgmXi(Px); !this%sgmpml_x(this%xi(Px));
             sg_y = this%sgmYi05(Py); !this%sgmpml_y(this%yi05(Py));
             sg_z = this%sgmZi05(Pz); !this%sgmpml_z(this%zi05(Pz));
@@ -370,23 +319,7 @@ contains
             a5=(2.0+cc*this%ht*sg_x)/a0
             a6=(-2.0+cc*this%ht*sg_x)/a0
             this%Hf%X(Px,Py,Pz)=this%Hf%X(Px,Py,Pz)*a4+this%Hpml%X(Px,Py,Pz)*a5+fldpml0*a6;
-        !    if (checkupdated==1) then
-        !       this%Hf%chX(Px,Py,Pz) = this%Hf%chX(Px,Py,Pz)+1; ! this string is important for update checking
-        !    endif   
-        ! else
-        !    fatalerr = 302;
-        !    write(*,*) 'Alert! HX PML point update bounds error.'
-        ! endif 
       case(2) ! HY update
-        ! if (checkbounds==1) then
-        !    ! Check all the necessary points are correct
-        !    inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, component);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 1);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz-1, 1);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 3);
-        !    inc = inc + this%Ef%mesh_checkpoint(Px-1, Py, Pz, 3);
-        ! endif  
-        ! if (inc==0) then
             sg_x = this%sgmXi05(Px); !this%sgmpml_x(this%xi05(Px));
             sg_y = this%sgmYi(Py);   !this%sgmpml_y(this%yi(Py));
             sg_z = this%sgmZi05(Pz); !this%sgmpml_z(this%zi05(Pz));
@@ -403,23 +336,7 @@ contains
             this%Hpml%Y(Px,Py,Pz)=-(DH+this%JfH%Y(Px,Py,Pz)*4.0d0*Pi/cc)*a2+this%Hpml%Y(Px,Py,Pz)*a1;
             ! real HY field
             this%Hf%Y(Px,Py,Pz)=this%Hf%Y(Px,Py,Pz)*a4+this%Hpml%Y(Px,Py,Pz)*a5+fldpml0*a6;
-        !    if (checkupdated==1) then
-        !       this%Hf%chY(Px,Py,Pz) = this%Hf%chY(Px,Py,Pz)+1; ! this string is important for update checking
-        !    endif   
-        ! else
-        !    fatalerr = 302;
-        !    write(*,*) 'Alert! HY PML point update bounds error.'
-        ! endif 
       case(3) ! HZ update
-        !if (checkbounds==1) then 
-        !   ! Check all the necessary points are correct
-        !   inc = inc + this%Hf%mesh_checkpoint(Px, Py, Pz, component);
-        !   inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 2);
-        !   inc = inc + this%Ef%mesh_checkpoint(Px-1, Py, Pz, 2);
-        !   inc = inc + this%Ef%mesh_checkpoint(Px, Py, Pz, 1);
-        !   inc = inc + this%Ef%mesh_checkpoint(Px, Py-1, Pz, 1);
-        !endif   
-        !if (inc==0) then
            sg_x = this%sgmXi05(Px); !this%sgmpml_x(this%xi05(Px));
            sg_y = this%sgmYi05(Py); !this%sgmpml_y(this%yi05(Py));
            sg_z = this%sgmZi(Pz);   !this%sgmpml_z(this%zi(Pz));
@@ -435,13 +352,6 @@ contains
            this%Hpml%Z(Px,Py,Pz)=-(DH+this%JfH%Z(Px,Py,Pz)*4.0d0*Pi/cc)*a2+this%Hpml%Z(Px,Py,Pz)*a1;
            ! real HZ field
            this%Hf%Z(Px,Py,Pz)=this%Hf%Z(Px,Py,Pz)*a4+this%Hpml%Z(Px,Py,Pz)*a5+fldpml0*a6;
-        !   if (checkupdated==1) then
-        !      this%Hf%chZ(Px,Py,Pz) = this%Hf%chZ(Px,Py,Pz)+1; ! this string is important for update checking
-        !   endif   
-        ! else
-        !   fatalerr = 302;
-        !   write(*,*) 'Alert! HZ PML point update bounds error.'
-        !endif
       case default ! Incorrect
          fatalerr = 304;
          write(*,*) 'Alert! Incorrect use of Component in updateEpoint function!', component 
@@ -693,15 +603,6 @@ contains
        enddo
     enddo
     !$OMP END PARALLEL DO
-  !  !$OMP PARALLEL DO SHARED(balance)
-  !  do k=2,this%Nz-1
-  !     do j=2,this%Ny-1
-  !        call this%fillHBoundaryPointPML(t, 0, j, k, 1);
-  !        call this%fillHBoundaryPointPML(t, this%Nx, j, k, 1);
-  !        !$ call AddParBalance;
-  !     enddo
-  !  enddo
-  !  !$OMP END PARALLEL DO
     
     ! HY Boundaries Update
     !$OMP PARALLEL DO SHARED(balance)
@@ -722,15 +623,6 @@ contains
        enddo
     enddo
     !$OMP END PARALLEL DO
-   ! !$OMP PARALLEL DO SHARED(balance)
-   ! do k=2,this%Nz-1
-   !    do i=2,this%Nx-1
-   !       call this%fillHBoundaryPointPML(t, i, 0, k, 2);
-   !       call this%fillHBoundaryPointPML(t, i, this%Ny, k, 2);
-   !       !$ call AddParBalance;
-   !    enddo
-   ! enddo
-   ! !$OMP END PARALLEL DO
     
     ! HZ Boundaries Update
     !$OMP PARALLEL DO SHARED(balance)
@@ -751,15 +643,6 @@ contains
        enddo
     enddo
     !$OMP END PARALLEL DO
-  !  !$OMP PARALLEL DO SHARED(balance)
-  !  do j=2,this%Ny-1
-  !     do i=2,this%Nx-1
-  !        call this%fillHBoundaryPointPML(t, i, j, 0, 3);
-  !        call this%fillHBoundaryPointPML(t, i, j, this%Nz, 3);
-  !        !$ call AddParBalance;
-  !     enddo
-  !  enddo
-  !  !$OMP END PARALLEL DO
   end subroutine fillHBoundaryPML
 
 

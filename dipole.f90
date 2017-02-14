@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of divergence free source (old and slow implementation)
+
 module dipole
 ! Computate the analytic solution of the dipole
   use commonvars

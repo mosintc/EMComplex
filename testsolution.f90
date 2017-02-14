@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of non divergence free source for T. Hagstrom
+
 module testsolution
   ! Computate the analytic solution of the dipole
   implicit none

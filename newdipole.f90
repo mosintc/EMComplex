@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of divergence free source
+
 module newdipole
 ! Computate the analytic solution of the dipole
   use commonvars
@@ -11,18 +17,17 @@ module newdipole
      procedure getNewDipoleJpoint;
   end type tNewDipole
 contains
-    
+
 !getF------------------------------------------
     real*8 function getF(t)
     ! Calculate the F      
       real*8, intent(in) :: t
       getF=a*sin(v*t)
     end function getF
-    
+
 !getDF------------------------------------------
     real*8 function getDF(t,type)
-      ! Calculate the derivative of F
-      use omp_lib;
+    ! Calculate the derivative of F  
       real*8, intent(in) :: t
       integer, intent(in) :: type
       getDF = 0;
@@ -82,8 +87,7 @@ contains
 
 !getM------------------------------------------
    real*8 function getM(x,y,z)
-     ! Calculate M function
-      use omp_lib;
+    ! Calculate M function  
       real*8, intent(in) :: x, y, z
       real*8 :: R
       R=sqrt(x**2+y**2+z**2)
@@ -97,8 +101,7 @@ contains
 
 !getDM------------------------------------------
     real*8 function getDM(x,y,z,type)
-      ! Calculate derivatives of M function
-      use omp_lib;
+    ! Calculate derivatives of M function  
       real*8, intent(in) :: x, y, z
       integer, intent(in) :: type
       real*8 :: R, detm
@@ -259,29 +262,11 @@ contains
       else
         write(*,*) 'Alert: getDW get an unexpected type:', type
       end if
-    end function getDW
+    end function getDW  
 
-!Epoint------------------------------------------
-    real*8 function getDipoleEpoint(x,y,z,t,type)
-    ! Calculate Electric pole in the time-point  
-      real*8, intent(in) :: x,y,z,t
-      integer, intent(in) :: type
-      getDipoleEpoint = 0.0d0;
-      if (type==1) then            ! EX
-         getDipoleEpoint = 0.0d0
-      else if (type == 2) then      ! EY
-         getDipoleEpoint = -x/cc*(getM(x,y,z)*getDW(x,y,z,t,39)+getDM(x,y,z,3)*getDW(x,y,z,t,91))    
-      else if (type == 3) then      ! EZ
-         getDipoleEpoint = x/cc*(getDM(x,y,z,2)*getDW(x,y,z,t,91)+getM(x,y,z)*getDW(x,y,z,t,29))
-      else
-         write(*,*) 'Alert: getEpoint get an unexpected type:', type
-      end if
-    end function getDipoleEpoint
-
-    
 !getNewDipoleEpoint------------------------------------------
     real*8 function getNewDipoleEpoint(this, x, y, z, xp, yp, zp, t, type, problem_type)
-      ! Calculate Electric pole in the time-point
+      ! Calculate Electric pole at the time-point
       class(tNewDipole) :: this;
       real*8, intent(in) :: x, y, z;
       integer, intent(in) :: xp, yp, zp;
@@ -364,29 +349,11 @@ contains
          end if
       endif   
     end function getNewDipoleEpoint
-  
-
-!Hpoint------------------------------------------
-    real*8 function getDipoleHpoint(x,y,z,t,type)
-    ! Calculate Magnetic pole in the time-point  
-      real*8, intent(in) :: x,y,z,t
-      integer, intent(in) :: type
-      getDipoleHpoint = 0.0d0
-      if (type==1) then             ! HX
-         getDipoleHpoint = -x*(getDW(x,y,z,t,22)*getM(x,y,z)+2*getDW(x,y,z,t,2)*getDM(x,y,z,2)+getW(x,y,z,t)*getDM(x,y,z,22)+getDW(x,y,z,t,33)*getM(x,y,z)+2*getDW(x,y,z,t,3)*getDM(x,y,z,3)+getW(x,y,z,t)*getDM(x,y,z,33));
-      else if (type == 2) then      ! HY
-         getDipoleHpoint = getDW(x,y,z,t,2)*getM(x,y,z)+x*getDW(x,y,z,t,21)*getM(x,y,z)+x*getDW(x,y,z,t,2)*getDM(x,y,z,1)+getW(x,y,z,t)*getDM(x,y,z,2)+x*getDW(x,y,z,t,1)*getDM(x,y,z,2)+x*getW(x,y,z,t)*getDM(x,y,z,21);
-      else if (type == 3) then      ! HZ
-         getDipoleHpoint = getDW(x,y,z,t,3)*getM(x,y,z)+x*getDW(x,y,z,t,31)*getM(x,y,z)+x*getDW(x,y,z,t,3)*getDM(x,y,z,1)+getW(x,y,z,t)*getDM(x,y,z,3)+x*getDW(x,y,z,t,1)*getDM(x,y,z,3)+x*getW(x,y,z,t)*getDM(x,y,z,31);
-      else
-         write(*,*) 'Alert: getHpoint get an unexpected type!', type   
-      end if
-    end function getDipoleHpoint
 
     
 !Hpoint------------------------------------------
     real*8 function getNewDipoleHpoint(this, x, y, z, xp, yp, zp, t, type, problem_type)
-      ! Calculate Magnetic pole in the time-point
+      ! Calculate Magnetic pole at the time-point
       class(tNewDipole) :: this;
       real*8, intent(in) :: x, y, z;
       integer, intent(in) :: xp, yp, zp;
@@ -471,29 +438,10 @@ contains
       endif
     end function getNewDipoleHpoint
 
-    
-!Jpoint------------------------------------------
-    real*8 function getDipoleJpoint(x,y,z,t,type)
-    ! Calculate Currents in the time-point  
-      real*8, intent(in) :: x,y,z,t
-      integer, intent(in) :: type
-      real*8 :: res
-      getDipoleJpoint = 0.0d0
-      if (type==1) then             ! JX
-         getDipoleJpoint = 0.0d0
-      else if (type == 2) then      ! JY         
-         getDipoleJpoint = -x/(cc**2)*getDM(x,y,z,3)*getDW(x,y,z,t,92)+x*getDM(x,y,z,322)*getW(x,y,z,t)+x*getDM(x,y,z,22)*getDW(x,y,z,t,3)+2.0d0*x*getDM(x,y,z,32)*getDW(x,y,z,t,2)+2.0d0*x*getDM(x,y,z,2)*getDW(x,y,z,t,32)+x*getDM(x,y,z,3)*getDW(x,y,z,t,22)+x*getDM(x,y,z,333)*getW(x,y,z,t)+3.0d0*x*getDM(x,y,z,33)*getDW(x,y,z,t,3)+3.0d0*x*getDM(x,y,z,3)*getDW(x,y,z,t,33)+2.0d0*getDM(x,y,z,31)*getW(x,y,z,t)+2.0d0*getDM(x,y,z,3)*getDW(x,y,z,t,1)+x*getDM(x,y,z,311)*getW(x,y,z,t)+2.0d0*x*getDM(x,y,z,31)*getDW(x,y,z,t,1)+x*getDM(x,y,z,3)*getDW(x,y,z,t,11)+2.0d0*getDM(x,y,z,1)*getDW(x,y,z,t,3)+x*getDM(x,y,z,11)*getDW(x,y,z,t,3)+2.0d0*x*getDM(x,y,z,1)*getDW(x,y,z,t,31);
-      else if (type == 3) then      ! JZ
-         getDipoleJpoint = x/(cc**2)*getDM(x,y,z,2)*getDW(x,y,z,t,92)-2.0d0*getDM(x,y,z,21)*getW(x,y,z,t)-2.0d0*getDM(x,y,z,2)*getDW(x,y,z,t,1)-x*getDM(x,y,z,211)*getW(x,y,z,t)-2.0d0*x*getDM(x,y,z,21)*getDW(x,y,z,t,1)-x*getDM(x,y,z,2)*getDW(x,y,z,t,11)-2.0d0*getDM(x,y,z,1)*getDW(x,y,z,t,2)-x*getDM(x,y,z,11)*getDW(x,y,z,t,2)-2.0d0*x*getDM(x,y,z,1)*getDW(x,y,z,t,21)-x*getDM(x,y,z,222)*getW(x,y,z,t)-3.0d0*x*getDM(x,y,z,22)*getDW(x,y,z,t,2)-3.0d0*x*getDM(x,y,z,2)*getDW(x,y,z,t,22)-x*getDM(x,y,z,332)*getW(x,y,z,t)-x*getDM(x,y,z,33)*getDW(x,y,z,t,2)-2.0d0*x*getDM(x,y,z,32)*getDW(x,y,z,t,3)-2.0d0*x*getDM(x,y,z,3)*getDW(x,y,z,t,32)-x*getDM(x,y,z,2)*getDW(x,y,z,t,33)
-      else
-        write(*,*) 'Alert: getJpoint get an unexpected type!', type  
-      end if
-      getDipoleJpoint = -getDipoleJpoint*cc/4.0d0/Pi;
-    end function getDipoleJpoint
 
 !Jpoint------------------------------------------
     real*8 function getNewDipoleJpoint(this, x, y, z, xp, yp, zp, t, type, problem_type)
-      ! Calculate Currents in the time-point
+      ! Calculate Currents at the time-point
       class(tNewDipole) :: this;
       real*8, intent(in) :: x, y, z;
       integer, intent(in) :: xp, yp, zp;

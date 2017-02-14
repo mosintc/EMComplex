@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains global variables and objects
+
 module commonvars
   
   implicit none;
@@ -78,7 +84,6 @@ module commonvars
     ! 402 - Auxiliary problems size correction should be > 0
     ! 403 - There is no free timers more!
 
-    
     ! 1001 - Trying to write to the file that isn't open
 
   !------------BUILD OPTIONS--------------

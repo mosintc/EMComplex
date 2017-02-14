@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains OpenMP parallelization options
+
 module Parallel
   use commonvars;
   use omp_lib;
@@ -13,7 +19,6 @@ contains
 
 !InitParallelParameters-------------------------------------------------
   subroutine InitParallelParameters();
- 
     !$  nprocs = OMP_get_max_threads();
     !$  if ((doparallel == 1).AND.(nprocs>0)) then
     !$     allocate(balance(1:nprocs));
@@ -27,7 +32,6 @@ contains
     !$    allocate(balance(1:1));
     !$    balance(1)=0;
     !$  endif
-    
   end subroutine InitParallelParameters;
   
 end module Parallel

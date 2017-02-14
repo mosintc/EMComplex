@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of tAuxMesh class
+
 module auxmeshclass
 ! Class that contains arrays with field components  
   use commonvars

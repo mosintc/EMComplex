@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of tSource class
+
 module sourceclass
 ! Source class that describes analytical solution and sources  
   use commonvars
@@ -28,7 +34,6 @@ contains
     select case (this%sourcetype)
     case (0)
         res = this%newdip%getNewDipoleEpoint(x, y, z, xp, yp, zp, t, type, this%problem_type);
-       ! res = getDipoleEpoint(x,y,z,t,type);
     case (1)
        res = getSDipoleEpoint(x,y,z,t,type);
     end select
@@ -47,7 +52,6 @@ contains
     select case (this%sourcetype)
     case (0)
        res = this%newdip%getNewDipoleHpoint(x, y, z, xp, yp, zp, t, type, this%problem_type);
-       ! res = getDipoleHpoint(x,y,z,t,type);
     case (1)
        res = getSDipoleHpoint(x,y,z,t,type);
     end select   
@@ -66,7 +70,6 @@ contains
     select case (this%sourcetype)
     case (0)
        res = this%newdip%getNewDipoleJpoint(x, y, z, xp, yp, zp, t, type, this%problem_type);
-       ! res = getDipoleJpoint(x,y,z,t,type);
     case (1)
        res = getSDipoleJpoint(x,y,z,t,type);
     end select    

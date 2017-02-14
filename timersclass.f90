@@ -1,3 +1,9 @@
+!-----------------------------------------------------------------------
+!  Copyright 2017 Mikhail Osintcev
+!  This file is part of the EMtool developed at NCSU
+!-----------------------------------------------------------------------
+! This module contains implementation of tTimers class
+
 module timersclass
   ! The set of timers to control the problems
   use commonvars
@@ -81,6 +87,5 @@ contains
       this%isused(N) = 0;
       this%timer(N) = 0;
     end subroutine closetimer;    
-
     
 end module timersclass
